@@ -82,9 +82,9 @@
     "codemirror": "^5.42.0",
     "lodash": "^4.17.15",
     "pegjs": "^0.10.0",
-    "react": "^16.6.3",
+    "react": "^16.13.1",
     "react-codemirror2": "^5.1.0",
-    "react-dom": "^16.6.3"
+    "react-dom": "^16.13.1"
   },
   "resolutions": {
     "set-value": "2.0.1",
