@@ -80,7 +80,7 @@
   },
   "dependencies": {
     "codemirror": "^5.42.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "pegjs": "^0.10.0",
     "react": "^16.6.3",
     "react-codemirror2": "^5.1.0",
