@@ -45,7 +45,7 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.20",
     "react": "^16.6.3",
     "react-day-picker": "^5.3.0",
     "react-dom": "^16.6.3",
