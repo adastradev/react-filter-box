@@ -113,5 +113,6 @@ export {
     GridDataAutoCompleteHandler,
     BaseAutoCompleteHandler,
     Option as AutoCompleteOption,
-    Expression
+    Expression,
+    validateQuery
 };
