@@ -1,6 +1,8 @@
 import * as _ from "lodash";
 import Expression from './Expression';
 import BaseAutoCompleteHandler from './BaseAutoCompleteHandler';
+import FilterQueryParser from './FilterQueryParser';
+import ParsedError from './ParsedError';
 
 interface ValidationResult {
   isValid: boolean;
@@ -37,8 +39,7 @@ const validateExpression = (
   return result;
 }
 
-
-const validateQuery = (
+const validateQueryExpression = (
     parsedQuery: Expression [],
     autoCompleteHandler: BaseAutoCompleteHandler
   ) : ValidationResult => {
@@ -52,8 +53,26 @@ const validateQuery = (
   return result;
 }
 
-export default validateQuery;
+const validateQueryString = (
+  query: string,
+  autoCompleteHandler: BaseAutoCompleteHandler
+) : ValidationResult => {
+  let result: ValidationResult;
+
+  const parser = new FilterQueryParser();
+  parser.setAutoCompleteHandler(autoCompleteHandler);
+  const parseResult = parser.parse(query);
+  if ((parseResult as ParsedError).isError) {
+    result = { isValid: false, message: 'Error parser query string' };
+  } else {
+    result = validateQueryExpression(parseResult as Expression[], autoCompleteHandler);
+  }
+
+  return result;
+}
 
 export {
-  ValidationResult
+  ValidationResult,
+  validateQueryExpression,
+  validateQueryString
 }

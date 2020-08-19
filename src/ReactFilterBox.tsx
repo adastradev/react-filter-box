@@ -9,7 +9,7 @@ import FilterQueryParser from "./FilterQueryParser";
 import BaseResultProcessing from "./BaseResultProcessing";
 import BaseAutoCompleteHandler from "./BaseAutoCompleteHandler";
 import ParsedError from "./ParsedError";
-import validateQuery from './validateQuery';
+import { validateQueryString, validateQueryExpression } from './validateQuery';
 
 export default class ReactFilterBox extends React.Component<any, any> {
 
@@ -35,9 +35,17 @@ export default class ReactFilterBox extends React.Component<any, any> {
 
         this.parser.setAutoCompleteHandler(autoCompleteHandler);
 
+        let errorState = false;
+        if (props.strictMode && props.query && props.query.length > 0) {
+            const expressions = this.parser.parse(props.query);
+            if ((expressions as Expression[]).length > 0) {
+                errorState = validateQueryExpression(expressions as Expression[], autoCompleteHandler).isValid === false;
+            }
+        }
+
         this.state = {
             isFocus: false,
-            isError: false
+            isError: errorState
         }
         //need onParseOk, onParseError, onChange, options, data
     }
@@ -51,7 +59,7 @@ export default class ReactFilterBox extends React.Component<any, any> {
         if ((result as ParsedError).isError) {
             return this.props.onParseError(result, { isValid: true });
         } else if (this.props.strictMode) {
-            const validationResult = validateQuery(result as Expression[], this.parser.autoCompleteHandler);
+            const validationResult = validateQueryExpression(result as Expression[], this.parser.autoCompleteHandler);
             if (!validationResult.isValid) {
                 return this.props.onParseError(result, validationResult);
             }
@@ -66,7 +74,7 @@ export default class ReactFilterBox extends React.Component<any, any> {
         if ((result as ParsedError).isError) {
             this.setState({ isError: true })
         } else if (this.props.strictMode) {
-            validationResult = validateQuery(result as Expression[], this.parser.autoCompleteHandler);
+            validationResult = validateQueryExpression(result as Expression[], this.parser.autoCompleteHandler);
             this.setState({ isError: !validationResult.isValid })
         } else {
             this.setState({ isError: false })
@@ -114,5 +122,7 @@ export {
     BaseAutoCompleteHandler,
     Option as AutoCompleteOption,
     Expression,
-    validateQuery
+    validateQueryExpression,
+    validateQueryExpression as validateQuery,
+    validateQueryString,
 };
