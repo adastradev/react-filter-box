@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import validateQuery from "../src/validateQuery";
+import { validateQueryExpression, validateQueryString } from "../src/validateQuery";
 import Expression from "../src/Expression";
 import GridDataAutoCompleteHandler, { Option } from '../src/GridDataAutoCompleteHandler';
 // import sinon = require("sinon");
 
-describe("#validateQuery", () => {
+describe("#validateQueryExpression", () => {
 
     // common fixture data
     var options: Option[] = [
@@ -38,7 +38,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.true;
         });
 
@@ -50,7 +50,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.true;
         });
 
@@ -62,7 +62,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.false;
             expect(result.message.indexOf('Invalid category')).to.eq(0);
         });
@@ -77,7 +77,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.true;
         });
 
@@ -89,7 +89,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.true;
         });
 
@@ -101,7 +101,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.false;
             expect(result.message.indexOf('Invalid operator')).to.eq(0);
         });
@@ -114,7 +114,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.false;
             expect(result.message.indexOf('Invalid operator')).to.eq(0);
         });
@@ -138,7 +138,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.true;
         });
 
@@ -159,7 +159,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.false;
             expect(result.message.indexOf('Invalid category')).to.eq(0);
         });
@@ -190,7 +190,7 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.true;
         });
 
@@ -220,9 +220,70 @@ describe("#validateQuery", () => {
                 }
             ];
 
-            var result = validateQuery(expression, autoCompleteHandler);
+            var result = validateQueryExpression(expression, autoCompleteHandler);
             expect(result.isValid).to.be.false;
             expect(result.message.indexOf('Invalid operator')).to.eq(0);
         });
+    });
+});
+
+describe("#validateQueryString", () => {
+
+    // common fixture data
+    var options: Option[] = [
+        {
+            columnField: 'column1',
+            columnText: 'Column1',
+            type: 'text'
+        },
+        {
+            columnField: 'column2',
+            type: 'text'
+        },
+        {
+            columnField: 'column3',
+            columnText: 'Column3',
+            type: 'text',
+            customOperatorFunc: (category: string): string[] => {
+                return ['**', 'in'];
+            }
+        }
+    ];
+    var autoCompleteHandler = new GridDataAutoCompleteHandler([], options);
+
+        
+    it("when query string is empty, isValid set to true", () => {
+        var query = "";
+
+        var result = validateQueryString(query, autoCompleteHandler);
+        expect(result.isValid).to.be.true;
+    });
+
+    it("when query string does not parse, isValid set to false", () => {
+        var query = "column1 ==";
+
+        var result = validateQueryString(query, autoCompleteHandler);
+        expect(result.isValid).to.be.false;
+    });
+
+    it("when query string has a valid query, isValid set to true", () => {
+        var query = "column1 == ABC";
+
+        var result = validateQueryString(query, autoCompleteHandler);
+        expect(result.isValid).to.be.true;
+    });
+
+    it("when query string has an invalid category, isValid set to false", () => {
+        var query = "columnX == ABC";
+
+        var result = validateQueryString(query, autoCompleteHandler);
+        expect(result.isValid).to.be.false;
+    });
+
+    it("when query string has an invalid operator, isValid set to false", () => {
+        var query = "column1 !== ABC";
+
+        var result = validateQueryString(query, autoCompleteHandler);
+        expect(result.isValid).to.be.false;
     });
 });
