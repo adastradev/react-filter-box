@@ -40,6 +40,8 @@ export default class ReactFilterBox extends React.Component<any, any> {
             const expressions = this.parser.parse(props.query);
             if ((expressions as Expression[]).length > 0) {
                 errorState = validateQueryExpression(expressions as Expression[], autoCompleteHandler).isValid === false;
+            } else if ((expressions as ParsedError).isError) {
+                errorState = true;
             }
         }
 
